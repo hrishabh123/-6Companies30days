@@ -1,26 +1,38 @@
 class Solution {
 public:
-    int numDecodings(string s) {
-        unordered_map<int, int> Table;
-        return dfs(Table, s, 0);
+    int solver(string s, int pos, vector<int> &dp) {
+        if(pos>=s.size()) return 1;
+        
+        if(dp[pos]==-1) {
+            string temp;
+            int i,j,n,k,count=0;
+            temp.push_back(s[pos]);
+            if(stoi(temp)==0) return 0;
+
+            n = stoi(temp);
+            if(n>=1 && n<=26) {
+                // cout<<n<<endl;
+                count += solver(s,pos+1,dp);
+            }
+
+            for(i=pos+1;i<s.size();i++) {
+                temp.push_back(s[i]);
+                n = stoi(temp);
+                if(n>=1 && n<=26) {
+                    // cout<<n<<endl;
+                    count += solver(s,i+1,dp);
+                } else break;
+            }
+            dp[pos] = count;
+        }
+        
+        return dp[pos];
     }
-    int dfs(unordered_map<int, int>& Table, string s, int pos){
-        if(pos == s.length()) return 1;
-        if(pos > s.length()) return 0;
-        if(s[pos] == '0') return 0;
-
+    
+    int numDecodings(string s) {
+        vector<int> dp(s.size()+1,-1);
         
-        int a = stoi(s.substr(pos, 2));
         
-        if(Table.find(pos) != Table.end()){
-            return Table[pos];
-        }
-        
-        Table[pos] = dfs(Table, s, pos+1);
-        if(a<= 26){
-            Table[pos] = Table[pos]+dfs(Table, s, pos+2);
-        }
-
-        return Table[pos];
+        return solver(s,0,dp);
     }
 };
